@@ -116,6 +116,8 @@
   .chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px}
   .chip{border:1px solid var(--line);background:#fff;color:var(--plum);border-radius:999px;padding:5px 11px;font:inherit;font-size:13px;cursor:pointer}
   .chip:hover{border-color:var(--lacquer);color:var(--lacquer)}
+  .chip-service{border-color:var(--lacquer);color:var(--lacquer);font-weight:600}
+  .chip-service:hover{background:var(--lacquer);color:#fff}
   .chat form{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
   .chat input{flex:1;min-width:0;border:1px solid var(--line);background:var(--base);color:var(--plum);border-radius:999px;padding:10px 15px;font:inherit}
   .chat .send{background:var(--lacquer);color:#fff;border:0;border-radius:999px;padding:0 18px;font:inherit;font-weight:600;cursor:pointer}
@@ -353,7 +355,7 @@
       <div class="chat" aria-label="Chat di prenotazione">
         <div class="chat-head"><div class="av">L</div><div><b>Assistente di Laura</b><small>Risponde subito, a qualsiasi ora</small></div></div>
         <div class="messages" id="messages" aria-live="polite"></div>
-        <div class="chips" id="chips"></div>
+        <div class="chips" id="chips" aria-label="Risposte rapide"></div>
         <div class="mode" id="mode"></div>
         <form id="form" autocomplete="off">
           <input type="text" id="input" placeholder="Scrivi un messaggio…" aria-label="Messaggio">
@@ -416,6 +418,10 @@ const BIZ = {
   ]
 };
 
+// Indirizzo dello script Google che collega il sito al foglio "Disponibilità" e "Prenotazioni".
+// Vuoto = calendario di esempio. Si compila dopo aver pubblicato lo script (vedi google-apps-script/ISTRUZIONI.md).
+const API_URL = "";
+
 // Prezzi: vuoto finché Laura non decide il listino. Esempio: {"Smalto semipermanente":"30 €"}
 const PRICES = {};
 
@@ -434,7 +440,8 @@ STILE: caldo, semplice, frasi brevi (massimo 3-4 righe), al massimo un'emoji. Da
 
 REGOLE FERREE:
 - Usa SOLO le informazioni qui sotto. Non inventare servizi, prezzi, sconti, indirizzi o disponibilità.
-- Non confermare mai un orario: raccogli la richiesta e spiega che Laura conferma l'orario di persona, entro la giornata.
+- Se la cliente ha scelto un orario dal calendario, quello è il suo orario: non proporne altri e non dire che Laura deve ancora sceglierlo. Spiega che, appena invia la richiesta, l'orario viene riservato per lei e Laura le scrive per confermare.
+- Se la cliente non ha scelto un orario dal calendario, non confermarlo tu: raccogli la richiesta e spiega che Laura propone l'orario.
 - Per prenotare servono: nome, servizio, giorno e fascia oraria preferiti, numero di telefono ed email (per il riepilogo). Chiedi ciò che manca, una o due cose alla volta. Se l'email non sembra valida, richiedila con gentilezza.
 - Orari: usa SOLO la lista ORARI LIBERI qui sotto. Se la cliente chiede un orario che non è nella lista, proponi i più vicini tra quelli liberi. Se la lista è vuota, raccogli giorno e fascia preferiti e spiega che Laura propone lei l'orario. Nel campo "quando" scrivi giorno e ora scelti.
 - Il listino prezzi non è ancora pubblicato: se chiedono un prezzo, spiega con gentilezza che Laura sta definendo il listino e risponde lei, e segnala un handoff "richiesta prezzo".
@@ -473,7 +480,7 @@ const cap = l => l.charAt(0).toUpperCase() + l.slice(1);
 
 function renderAvail(){
   const box = $("avail");
-  if (!db && !demoMode){ box.innerHTML = `<div class="avail-empty">Il calendario degli orari liberi compare qui appena è attivo. Nel frattempo scrivi all'assistente: Laura ti propone lei l'orario.</div>`; return; }
+  if (!db && !demoMode && !sheetMode){ box.innerHTML = `<div class="avail-empty">Il calendario degli orari liberi compare qui appena è attivo. Nel frattempo scrivi all'assistente: Laura ti propone lei l'orario.</div>`; return; }
   if (!slotsLoaded) return;
   const free = freeSlots();
   const byDay = {};
@@ -527,10 +534,8 @@ $("avail").addEventListener("click", e => {
   if (day){ selDay = day.dataset.day; if (canManage){ $("m-date").value = selDay; } renderAvail(); return; }
   const b = e.target.closest(".slot"); if (!b) return;
   const sl = slots.find(x => x.id === b.dataset.id); if (!sl) return;
-  fb.active = true; fb.quando = slotLabel(sl); fb.slotId = sl.id;
-  renderAvail();
   document.getElementById("prenota").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
-  send("Vorrei prenotare " + slotLabel(sl));
+  pickSlot(sl);
 });
 
 function renderManage(){
@@ -595,7 +600,13 @@ function loadDemoSlots(){
 }
 
 async function initAvailability(){
-  if (!(window.claude && typeof window.claude.use === "function")){ loadDemoSlots(); return; }
+  if (!(window.claude && typeof window.claude.use === "function")){
+    if (API_URL){
+      sheetMode = true; await loadFromSheet();
+      setInterval(() => { if (document.visibilityState === "visible" && !busy) loadFromSheet(); }, 120000);
+    } else loadDemoSlots();
+    return;
+  }
   try {
     db = await window.claude.use("db");
     const u = await window.claude.use("user");
@@ -612,13 +623,100 @@ async function initAvailability(){
   }, err => { clearTimeout(timer); slotsLoaded = true; $("avail").innerHTML = `<div class="avail-empty">Calendario non disponibile in questo momento. Scrivi all'assistente: Laura ti propone lei l'orario.</div>`; });
 }
 
+
+// ---------- prenotazione: l'orario scelto non è più disponibile ----------
+async function reserveSlot(booking){
+  const id = booking.slotId;
+  let outcome = "local";
+  if (API_URL && !window.claude){
+    try {
+      const r = await fetch(API_URL, {method:"POST", body: JSON.stringify({action:"book", ...booking, sito:""})});
+      const j = await r.json();
+      if (j && j.ok) outcome = "saved";
+      else if (j && j.reason === "occupato") outcome = "taken";
+      else outcome = "error";
+    } catch(e){ outcome = "error"; }
+  } else if (db && canManage && id){
+    outcome = (await setSlotStatus(id, "prenotato")) ? "saved" : "local";
+  }
+  if (outcome === "taken"){
+    if (id){ const sl = slots.find(x => x.id === id); if (sl) sl.status = "prenotato"; }
+    renderAvail();
+    const msg = "Ops, quell'orario è stato appena preso da un'altra cliente 😕 Scegline un altro dal calendario qui sopra e completo subito la richiesta con i dati che mi hai già dato.";
+    addMsg(msg, "bot"); history.push({role:"assistant", content:msg});
+    Object.assign(fb, {active:true, servizio:booking.servizio, nome:booking.nome, telefono:booking.telefono, email:booking.email, quando:"", slotId:null});
+    pickedSlot = null;
+    return;
+  }
+  if (outcome === "error"){
+    const msg = "Non sono riuscita a inviare la richiesta per un problema di connessione. Riprova tra poco, oppure scrivi a Laura direttamente.";
+    addMsg(msg, "bot"); history.push({role:"assistant", content:msg});
+    return;
+  }
+  // salvata (o anteprima): l'orario sparisce dal calendario
+  if (id){ const sl = slots.find(x => x.id === id); if (sl) sl.status = "prenotato"; }
+  if (selDay && !freeSlots().some(x => x.date === selDay)) selDay = null;
+  renderAvail();
+  addRequest("book", booking);
+  pickedSlot = null; defaultChips();
+}
+
+// ---------- calendario collegato al foglio Google (sito pubblicato) ----------
+async function loadFromSheet(){
+  try {
+    const r = await fetch(API_URL, {cache:"no-store"});
+    const j = await r.json();
+    if (!j || !j.ok || !Array.isArray(j.slots)) throw new Error("risposta non valida");
+    const keep = new Set(slots.filter(x => x.status === "prenotato").map(x => x.id));
+    slots = j.slots.filter(x => x && x.date && x.time && x.id).map(x => ({id:String(x.id), date:String(x.date), time:String(x.time), status: keep.has(String(x.id)) ? "prenotato" : "libero"}));
+    slotsLoaded = true; sheetMode = true; renderAvail();
+  } catch(e){
+    if (!slotsLoaded) $("avail").innerHTML = `<div class="avail-empty">Non riesco a caricare gli orari in questo momento. Scrivi pure all'assistente: Laura ti propone lei l'orario.</div>`;
+  }
+}
+let sheetMode = false;
+
 // ---------- chat ----------
 const history = [];
 let sample = null, mcp = null, busy = false;
 
 const CHIPS = ["Fai la ricostruzione?","Com'è un appuntamento da te?","Vorrei prenotare un semipermanente","Ho le unghie molto fragili"];
-$("chips").innerHTML = CHIPS.map(c => `<button class="chip" type="button">${c}</button>`).join("");
-$("chips").addEventListener("click", e => { if (e.target.classList.contains("chip")) send(e.target.textContent); });
+let pickedSlot = null;   // orario scelto dal calendario, in attesa di completare la richiesta
+function setChips(list, kind){
+  $("chips").dataset.kind = kind || "";
+  $("chips").innerHTML = list.map(c => `<button class="chip${kind === "service" ? " chip-service" : ""}" type="button">${esc(c)}</button>`).join("");
+}
+function defaultChips(){ setChips(CHIPS, ""); }
+function serviceChips(){ setChips(SERVICES.map(s => s.name), "service"); }
+$("chips").addEventListener("click", e => {
+  const c = e.target.closest(".chip"); if (!c) return;
+  const kind = $("chips").dataset.kind;
+  if (kind === "service") setChips([], "");
+  send(c.textContent);
+});
+async function pickSlot(sl){
+  if (busy) return;
+  pickedSlot = sl;
+  Object.assign(fb, {active:true, quando:slotLabel(sl), slotId:sl.id});
+  renderAvail();
+  const ask = `Vorrei prenotare ${slotLabel(sl)}`;
+  addMsg(ask, "me"); history.push({role:"user", content:ask});
+  // dati già raccolti (es. dopo un orario appena preso da un'altra cliente): si completa subito
+  if (fb.servizio && fb.nome && fb.telefono && fb.email){
+    busy = true; $("send").disabled = true;
+    const res = fbNext();
+    addMsg(res.reply, "bot"); history.push({role:"assistant", content:res.reply});
+    if (res.booking){ res.booking.slotId = sl.id; await reserveSlot(res.booking); }
+    busy = false; $("send").disabled = false;
+    return;
+  }
+  const reply = fb.servizio
+    ? `Perfetto, ${slotLabel(sl)} 🗓️ Per ${fb.servizio.toLowerCase()} mi servono ancora pochi dati.`
+    : `Perfetto, ${slotLabel(sl)} 🗓️ Quale servizio desideri? Toccalo qui sotto.`;
+  addMsg(reply, "bot"); history.push({role:"assistant", content:reply});
+  if (!fb.servizio) serviceChips();
+  $("input").focus({preventScroll:true});
+}
 
 function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function addMsg(text, who){
@@ -664,7 +762,8 @@ function findService(t){
 }
 function fbFill(text){
   const t = text.toLowerCase();
-  const s = findService(t); if (s && !fb.servizio) fb.servizio = s.name;
+  const exact = SERVICES.find(x => x.name.toLowerCase() === t.trim());
+  const s = exact || findService(t); if (s && !fb.servizio) fb.servizio = s.name;
   if (!fb.quando){
     const hit = freeSlots().find(sl => { const lab = slotLabel(sl).toLowerCase(); const day = lab.split(" ")[0]; const tm = sl.time.replace(/^0/,""); return t.includes(day) && (t.includes(sl.time) || t.includes(tm) || t.includes(tm.replace(":00",""))); });
     if (hit){ fb.quando = slotLabel(hit); fb.slotId = hit.id; }
@@ -773,15 +872,22 @@ async function send(text){
   catch (e) { if (e && e.code === "not_granted"){ sample = null; setMode(); } res = fallbackAnswer(text); }
   typing.remove();
   addMsg(res.reply, "bot"); history.push({role:"assistant", content:res.reply});
-  if (res.booking && res.booking.nome && res.booking.telefono && res.booking.email) addRequest("book", res.booking);
   if (res.handoff) addRequest("hand", res.handoff);
-  busy = false; $("send").disabled = false; $("input").focus();
+  if (res.booking && res.booking.nome && res.booking.telefono && res.booking.email){
+    const booking = {...res.booking};
+    booking.slotId = booking.slotId || (pickedSlot && pickedSlot.id) || matchSlot(booking.quando);
+    await reserveSlot(booking);
+  } else if (fb.slotId && !pickedSlot){
+    const sl = slots.find(x => x.id === fb.slotId); if (sl) pickedSlot = sl;
+  }
+  busy = false; $("send").disabled = false; $("input").focus({preventScroll:true});
 }
 function setMode(){
   $("mode").textContent = sample ? "Risposte generate in tempo reale dalle informazioni di Laura." : "Modalità base: risposte predefinite dalle informazioni di Laura.";
 }
 $("form").addEventListener("submit", e => { e.preventDefault(); send($("input").value); });
 
+defaultChips();
 initAvailability();
 addMsg("Ciao! Sono l'assistente di Laura 💅 Posso raccontarti i servizi o raccogliere la tua richiesta di appuntamento. Come posso aiutarti?", "bot");
 setMode();
