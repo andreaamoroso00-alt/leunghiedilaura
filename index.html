@@ -151,6 +151,7 @@
   .row .name small{display:block;color:var(--soft);font-size:14px;font-weight:400}
   .row .time{color:var(--soft);font-size:14px;white-space:nowrap}
   .row .price{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:20px;white-space:nowrap;min-width:64px;text-align:right}
+  .row .price small{font-family:"Figtree",sans-serif;font-weight:400;font-size:13px;color:var(--soft);margin-right:4px}
   
 
   /* care */
@@ -319,7 +320,7 @@
 </head>
 <body>
 <div class="glow" aria-hidden="true"><span class="g1"></span><span class="g2"></span><span class="g3"></span></div>
-<div class="draft">Bozza: prezzi e testi da completare insieme.</div>
+<div class="draft">Bozza: testi da completare insieme.</div>
 
 <div class="wrap">
   <nav aria-label="Navigazione principale">
@@ -508,6 +509,7 @@ const BIZ = {
       ["Smalto semipermanente","Dura 2–3 settimane"],
       ["Copertura in gel","Gel sull'unghia naturale, senza allungamento"],
       ["Ricostruzione in gel","Allungamento con forma a scelta"],
+      ["Muretti / Extreme","Ricostruzioni lunghe ed elaborate"],
       ["Refill ricostruzione","Ogni 3–4 settimane"],
       ["Rimozione semipermanente o gel",""]
     ]},
@@ -515,7 +517,7 @@ const BIZ = {
       ["Smalto semipermanente piedi",""]
     ]},
     {title:"Extra", c:"#c99aa8", items:[
-      ["Nail art","Decorazioni, french, effetti"]
+      ["Nail art","French e decorazioni particolari"]
     ]}
   ],
   rules: [
@@ -530,8 +532,19 @@ const BIZ = {
 // Vuoto = calendario di esempio. Si compila dopo aver pubblicato lo script (vedi google-apps-script/ISTRUZIONI.md).
 const API_URL = "https://script.google.com/macros/s/AKfycbwnx8sfU9yRNtMk_PfV5cj6wvyERyHCXFB6UqqsBeVODZGFqz2ySmb9WowuoZWa4m6nRQ/exec";
 
-// Prezzi: vuoto finché Laura non decide il listino. Esempio: {"Smalto semipermanente":"30 €"}
-const PRICES = {};
+// Prezzi confermati da Laura (4/11/2026). "da …" = prezzo di partenza, dipende dal lavoro.
+const PRICES = {
+  "Manicure classica":"10 €",
+  "Smalto semipermanente":"20 €",
+  "Copertura in gel":"30 €",
+  "Ricostruzione in gel":"40 €",
+  "Muretti / Extreme":"da 50 €",
+  "Refill ricostruzione":"35 €",
+  "Rimozione semipermanente o gel":"10 €",
+  "Smalto semipermanente piedi":"20 €",
+  "Nail art":"da 5 €"
+};
+const priceHTML = p => !p ? "" : p.startsWith("da ") ? `<small>da</small>${p.slice(3)}` : p;
 
 // Foto dei lavori: si aggiungono nella cartella "lavori" del sito, es. {src:"lavori/french-rosa.jpg", titolo:"French rosa"}
 // descrizione: due righe sul lavoro (si legge girando la carta)
@@ -555,8 +568,8 @@ const PORTFOLIO = [
 // ---------- render content ----------
 const $ = id => document.getElementById(id);
 $("chart").innerHTML = BIZ.groups.map(g => `<div class="group"><h3>${g.title}</h3>${g.items.map(i =>
-  `<div class="row"><span class="sw" style="--c:${g.c}"></span><span class="name">${i[0]}${i[1] ? `<small>${i[1]}</small>` : ""}</span><span class="price">${PRICES[i[0]] || ""}</span></div>`).join("")}</div>`).join("")
-  + `<p class="pricenote">${Object.keys(PRICES).length ? "" : "Il listino prezzi è in arrivo: per ora chiedi pure all'assistente qui sotto e ti risponde Laura."}</p>`;
+  `<div class="row"><span class="sw" style="--c:${g.c}"></span><span class="name">${i[0]}${i[1] ? `<small>${i[1]}</small>` : ""}</span><span class="price">${priceHTML(PRICES[i[0]])}</span></div>`).join("")}</div>`).join("")
+  + `<p class="pricenote">${Object.keys(PRICES).length ? "I prezzi con «da» sono di partenza: quello finale lo valutiamo insieme in base al lavoro." : "Il listino prezzi è in arrivo: per ora chiedi pure all'assistente qui sotto e ti risponde Laura."}</p>`;
 $("rules").innerHTML = BIZ.rules.map(r => `<li>${r}</li>`).join("");
 const TONES = ["var(--lacquer)","#e6aebb","var(--plum)","#f2d5dc","#c99aa8","var(--nude)"];
 function workTiles(list, n){
@@ -681,7 +694,7 @@ REGOLE FERREE:
 - Se la cliente non ha scelto un orario dal calendario, non confermarlo tu: raccogli la richiesta e spiega che Laura propone l'orario.
 - Per prenotare servono: nome, servizio, giorno e fascia oraria preferiti, numero di telefono ed email (per il riepilogo). Quando servizio e orario sono già scelti, chiedi nome, telefono ed email tutti insieme in un solo messaggio. Altrimenti chiedi ciò che manca, una o due cose alla volta. Se l'email non sembra valida, richiedila con gentilezza.
 - Orari: usa SOLO la lista ORARI LIBERI qui sotto. Se la cliente chiede un orario che non è nella lista, proponi i più vicini tra quelli liberi. Se la lista è vuota, raccogli giorno e fascia preferiti e spiega che Laura propone lei l'orario. Nel campo "quando" scrivi giorno e ora scelti.
-- Il listino prezzi non è ancora pubblicato: se chiedono un prezzo, spiega con gentilezza che Laura sta definendo il listino e risponde lei, e segnala un handoff "richiesta prezzo".
+- Prezzi: usa SOLO quelli della lista SERVIZI. I prezzi con "da" sono di partenza: spiega che il prezzo finale dipende dal lavoro e lo valuta Laura. Per i look della galleria senza prezzo, o per una nail art da preventivare, segnala un handoff "richiesta prezzo".
 - Non indicare durate dei servizi: dipendono dalle condizioni delle unghie e le valuta Laura.
 - Durante l'appuntamento le clienti trovano TV, caffè, acqua e chiacchiere: puoi dirlo se chiedono com'è l'esperienza.
 - Passa a Laura (handoff) per: allergie, unghie danneggiate o problemi di salute, richieste di nail art complesse da preventivare, reclami, o qualsiasi cosa che non sai con certezza.
@@ -1063,11 +1076,11 @@ function fallbackAnswer(text){
     if (!(isQ && before === JSON.stringify(fb))) return fbNext();
   }
   if (has(["dove","indirizzo","zona"])) return {reply:"Laura lavora a Foglizzo (TO): l'indirizzo preciso ti arriva insieme alla conferma dell'appuntamento."};
-  if (has(["prezz","costa","listino","quanto viene","quanto si paga","tariff"])) return {reply:"Laura sta definendo il listino: le giro la tua domanda e ti risponde lei con il prezzo giusto 💛", handoff:"Richiesta prezzo: " + text};
+  if (has(["prezz","costa","listino","quanto viene","quanto si paga","tariff"])) { const s0 = findService(t); if (s0 && s0.price) return {reply:`${s0.name}: ${s0.price}${s0.price.startsWith("da") ? " (il prezzo finale dipende dal lavoro, lo valuta Laura con te)" : ""} 💅 Vuoi prenotare?`}; return {reply:"Ecco il listino: " + SERVICES.filter(x => x.price).map(x => `${x.name} ${x.price}`).join(" · ") + ". I prezzi con «da» dipendono dal lavoro."}; }
   if (has(["pedicure","piedi","piede"])) return {reply:"Sì, per i piedi Laura fa lo smalto semipermanente 💅 Se vuoi prenotarlo scegli un orario dal calendario."};
   if (has(["nail art","decoraz","french","disegn"])) return {reply:"Sì, Laura fa nail art: decorazioni, french ed effetti. Per un disegno particolare mandale una foto di riferimento!"};
   const s = findService(t);
-  if (s) return {reply:`Sì, Laura fa ${s.name.toLowerCase()} 💅 Vuoi prenotare?`};
+  if (s) return {reply:`Sì, Laura fa ${s.name.toLowerCase()}${s.price ? ` (${s.price})` : ""} 💅 Vuoi prenotare?`};
   if (has(["pagare","pagamento","pagamenti","paga","contanti","paypal","satispay","bancomat","con carta","carta di credito"])) return {reply:"Puoi pagare in contanti, con PayPal o con Satispay 😊"};
   if (has(["disdir","annull","spostare"])) return {reply:"Puoi disdire gratis fino a 24 ore prima. Scrivimi nome e appuntamento e avviso Laura."};
   return {reply:"Non ne sono sicura e non voglio risponderti a caso: giro la domanda a Laura, che ti risponde presto.", handoff:"Domanda da gestire: " + text};
