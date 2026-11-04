@@ -85,7 +85,7 @@
   @media (max-width:760px){.works{grid-template-columns:repeat(2,1fr);gap:10px}.work{border-radius:110px 110px 18px 18px}
     .works.preview{grid-template-columns:repeat(3,1fr);gap:8px}.works.preview .work{border-radius:80px 80px 14px 14px}
     .works.preview .work.ph small{font-size:11px}.works.preview .work.ph .tip{width:30px;height:42px}.works.preview .work.ph .tip::after{width:6px;height:14px;margin:6px 0 0 7px}
-    .works.preview .work figcaption{font-size:12px;padding:20px 8px 8px}}
+    .works.preview .work figcaption{display:none}}
   /* pagina galleria */
   #galleria{display:none;min-height:100vh;padding-top:34px}
   body.g-open #galleria{display:block}
@@ -495,7 +495,12 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwnx8sfU9yRNtMk_PfV5cj6
 const PRICES = {};
 
 // Foto dei lavori: si aggiungono nella cartella "lavori" del sito, es. {src:"lavori/french-rosa.jpg", titolo:"French rosa"}
-const PORTFOLIO = [];
+const PORTFOLIO = [
+  // le prime 3 vanno anche in homepage
+  {src:"lavori/french-arancio.jpg", titolo:"French arancio e glitter"},
+  {src:"lavori/french-lilla-fiori.jpg", titolo:"French viola con fiori"},
+  {src:"lavori/lilla-animalier.jpg", titolo:"Lilla e animalier"},
+];
 
 // ---------- render content ----------
 const $ = id => document.getElementById(id);
