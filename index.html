@@ -81,7 +81,20 @@
   .work.ph .tip::after{content:"";display:block;width:9px;height:22px;border-radius:999px;background:rgba(255,255,255,.6);margin:9px 0 0 11px}
   .work.ph small{color:var(--soft);font-size:14px}
   .works-note{color:var(--soft);font-size:14px;margin-top:14px}
-  @media (max-width:760px){.works{grid-template-columns:repeat(2,1fr);gap:10px}.work{border-radius:110px 110px 18px 18px}}
+  .works-more{display:flex;justify-content:center;margin-top:26px}
+  @media (max-width:760px){.works{grid-template-columns:repeat(2,1fr);gap:10px}.work{border-radius:110px 110px 18px 18px}
+    .works.preview{grid-template-columns:repeat(3,1fr);gap:8px}.works.preview .work{border-radius:80px 80px 14px 14px}
+    .works.preview .work.ph small{font-size:11px}.works.preview .work.ph .tip{width:30px;height:42px}.works.preview .work.ph .tip::after{width:6px;height:14px;margin:6px 0 0 7px}
+    .works.preview .work figcaption{font-size:12px;padding:20px 8px 8px}}
+  /* pagina galleria */
+  #galleria{display:none;min-height:100vh;padding-top:34px}
+  body.g-open #galleria{display:block}
+  body.g-open > *:not(#galleria):not(.glow):not(.draft):not(dialog):not(script){display:none!important}
+  .g-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
+  .g-back{color:var(--plum);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  .g-back:hover{color:var(--lacquer)}
+  .g-cta{text-align:center;margin-top:40px}
+  .g-cta p{color:var(--soft);margin-bottom:14px}
   .lightbox{border:0;padding:0;background:transparent;max-width:min(92vw,720px)}
   .lightbox::backdrop{background:rgba(42,24,33,.82)}
   .lightbox img{max-width:100%;max-height:82vh;border-radius:22px;display:block}
@@ -308,9 +321,10 @@
 <section id="lavori">
   <div class="wrap">
     <h2>I miei lavori</h2>
-    <p class="lead">Qualche esempio di quello che faccio: tocca una foto per vederla più grande.</p>
-    <div class="works" id="works"></div>
+    <p class="lead">Qualche esempio di quello che faccio. Tocca una foto per vederla più grande.</p>
+    <div class="works preview" id="works"></div>
     <p class="works-note" id="works-note"></p>
+    <div class="works-more"><a class="btn" href="#galleria">Vedi tutti i lavori →</a></div>
   </div>
 </section>
 <dialog class="lightbox" id="lightbox" aria-label="Foto del lavoro"><button type="button" id="lb-close" aria-label="Chiudi">×</button><img id="lb-img" alt=""><p id="lb-cap"></p></dialog>
@@ -429,6 +443,17 @@
   </div>
 </section>
 
+<section id="galleria" aria-label="Tutti i lavori">
+  <div class="wrap">
+    <div class="g-top"><a class="g-back" href="#lavori">← Torna al sito</a><a class="btn" href="#prenota">Prenota</a></div>
+    <h2>Tutti i lavori</h2>
+    <p class="lead">Una raccolta delle unghie che ho fatto. Tocca una foto per vederla più grande.</p>
+    <div class="works" id="works-all"></div>
+    <p class="works-note" id="works-all-note"></p>
+    <div class="g-cta"><p>Ti piace qualcosa? Prenota e lo rifacciamo insieme, su misura per te.</p><a class="btn" href="#prenota">Prenota un appuntamento</a></div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <span>© Le unghie di Laura · Foglizzo (TO)</span>
@@ -478,23 +503,41 @@ $("chart").innerHTML = BIZ.groups.map(g => `<div class="group"><h3>${g.title}</h
   `<div class="row"><span class="sw" style="--c:${g.c}"></span><span class="name">${i[0]}${i[1] ? `<small>${i[1]}</small>` : ""}</span><span class="price">${PRICES[i[0]] || ""}</span></div>`).join("")}</div>`).join("")
   + `<p class="pricenote">${Object.keys(PRICES).length ? "" : "Il listino prezzi è in arrivo: per ora chiedi pure all'assistente qui sotto e ti risponde Laura."}</p>`;
 $("rules").innerHTML = BIZ.rules.map(r => `<li>${r}</li>`).join("");
+const TONES = ["var(--lacquer)","#e6aebb","var(--plum)","#f2d5dc","#c99aa8","var(--nude)"];
+function workTiles(list, n){
+  if (list.length) return list.map((w, i) => `<button type="button" class="work" data-i="${i}" aria-label="Apri la foto: ${esc(w.titolo || "lavoro")}"><img src="${esc(w.src)}" alt="${esc(w.titolo || "Lavoro di Laura")}" loading="lazy">${w.titolo ? `<figcaption>${esc(w.titolo)}</figcaption>` : ""}</button>`).join("");
+  return Array.from({length:n}, (_, i) => `<div class="work ph" aria-hidden="true"><span class="tip" style="--c:${TONES[i % TONES.length]}"></span><small>Foto in arrivo</small></div>`).join("");
+}
 function renderWorks(){
-  if (PORTFOLIO.length){
-    $("works").innerHTML = PORTFOLIO.map((w, i) => `<button type="button" class="work" data-i="${i}" aria-label="Apri la foto: ${esc(w.titolo || "lavoro")}"><img src="${esc(w.src)}" alt="${esc(w.titolo || "Lavoro di Laura")}" loading="lazy">${w.titolo ? `<figcaption>${esc(w.titolo)}</figcaption>` : ""}</button>`).join("");
-    $("works-note").textContent = "";
-  } else {
-    const tones = ["var(--lacquer)","#e6aebb","var(--plum)","#f2d5dc","#c99aa8","var(--nude)"];
-    $("works").innerHTML = tones.map(c => `<div class="work ph" aria-hidden="true"><span class="tip" style="--c:${c}"></span><small>Foto in arrivo</small></div>`).join("");
-    $("works-note").textContent = "Le foto dei lavori di Laura arrivano a breve.";
-  }
+  // in homepage: le prime 3 foto; nella pagina "Tutti i lavori": tutte
+  $("works").innerHTML = workTiles(PORTFOLIO.slice(0, 3), 3);
+  $("works-all").innerHTML = workTiles(PORTFOLIO, 9);
+  const none = PORTFOLIO.length ? "" : "Le foto dei lavori di Laura arrivano a breve.";
+  $("works-note").textContent = none; $("works-all-note").textContent = none;
 }
 renderWorks();
-$("works").addEventListener("click", e => {
+function openWork(e){
   const b = e.target.closest("button.work"); if (!b) return;
   const w = PORTFOLIO[+b.dataset.i]; if (!w) return;
   $("lb-img").src = w.src; $("lb-img").alt = w.titolo || "Lavoro di Laura"; $("lb-cap").textContent = w.titolo || "";
   if (typeof $("lightbox").showModal === "function") $("lightbox").showModal();
-});
+}
+$("works").addEventListener("click", openWork);
+$("works-all").addEventListener("click", openWork);
+// pagina dedicata ai lavori: si apre con l'indirizzo .../#galleria
+function route(){
+  const open = location.hash === "#galleria";
+  const was = document.body.classList.contains("g-open");
+  document.body.classList.toggle("g-open", open);
+  if (open){ window.scrollTo(0, 0); document.title = "Lavori – Le unghie di Laura"; }
+  else {
+    document.title = DOC_TITLE;
+    if (was && location.hash){ const t = document.querySelector(location.hash); if (t) setTimeout(() => t.scrollIntoView(), 0); }
+  }
+}
+const DOC_TITLE = document.title;
+window.addEventListener("hashchange", route);
+route();
 $("lb-close").addEventListener("click", () => $("lightbox").close());
 $("lightbox").addEventListener("click", e => { if (e.target === $("lightbox")) $("lightbox").close(); });
 
