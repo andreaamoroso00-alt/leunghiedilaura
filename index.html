@@ -337,7 +337,7 @@
   <header class="hero" id="top">
     <div>
       <h1>Le unghie di Laura</h1>
-      <p>Manicure, semipermanente e ricostruzione in gel, fatte con calma e su misura per le tue mani.</p>
+      <p>Manicure, semipermanente mani e piedi, ricostruzione unghie. Ogni trattamento viene eseguito con professionalità, pulizia e attenzione ai dettagli.</p>
       <a class="btn" href="#prenota">Prenota un appuntamento</a>
       <p class="meta">Solo su appuntamento · Foglizzo (TO)</p>
     </div>
@@ -510,6 +510,9 @@ const BIZ = {
       ["Ricostruzione in gel","Allungamento con forma a scelta"],
       ["Refill ricostruzione","Ogni 3–4 settimane"],
       ["Rimozione semipermanente o gel",""]
+    ]},
+    {title:"Piedi", c:"#b77b8f", items:[
+      ["Smalto semipermanente piedi",""]
     ]},
     {title:"Extra", c:"#c99aa8", items:[
       ["Nail art","Decorazioni, french, effetti"]
@@ -989,10 +992,14 @@ function addRequest(kind, data){
 const fb = {active:false, servizio:"", quando:"", nome:"", telefono:"", email:"", slotId:null};
 const DAYS = ["lunedì","lunedi","martedì","martedi","mercoledì","mercoledi","giovedì","giovedi","venerdì","venerdi","sabato","domenica","domani","dopodomani","prossima settimana"];
 function findService(t){
-  return SERVICES.find(s => {
+  // sceglie il servizio con più parole in comune (es. "semipermanente ai piedi" → servizio piedi)
+  let best = null, bestN = 0;
+  SERVICES.forEach(s => {
     const words = s.name.toLowerCase().split(/[ ,]+/).filter(w => w.length > 4);
-    return words.some(w => t.includes(w.slice(0, Math.max(5, w.length - 2))));
+    const n = words.filter(w => t.includes(w.slice(0, Math.max(5, w.length - 2)))).length;
+    if (n > bestN){ best = s; bestN = n; }
   });
+  return best || undefined;
 }
 function fbFill(text){
   const t = text.toLowerCase();
@@ -1057,7 +1064,7 @@ function fallbackAnswer(text){
   }
   if (has(["dove","indirizzo","zona"])) return {reply:"Laura lavora a Foglizzo (TO): l'indirizzo preciso ti arriva insieme alla conferma dell'appuntamento."};
   if (has(["prezz","costa","listino","quanto viene","quanto si paga","tariff"])) return {reply:"Laura sta definendo il listino: le giro la tua domanda e ti risponde lei con il prezzo giusto 💛", handoff:"Richiesta prezzo: " + text};
-  if (has(["pedicure","piedi","piede"])) return {reply:"Laura si occupa solo delle mani: niente pedicure né trattamenti ai piedi. Per le mani però c'è tutto il listino 💅"};
+  if (has(["pedicure","piedi","piede"])) return {reply:"Sì, per i piedi Laura fa lo smalto semipermanente 💅 Se vuoi prenotarlo scegli un orario dal calendario."};
   if (has(["nail art","decoraz","french","disegn"])) return {reply:"Sì, Laura fa nail art: decorazioni, french ed effetti. Per un disegno particolare mandale una foto di riferimento!"};
   const s = findService(t);
   if (s) return {reply:`Sì, Laura fa ${s.name.toLowerCase()} 💅 Vuoi prenotare?`};
