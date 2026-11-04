@@ -82,10 +82,34 @@
   .work.ph small{color:var(--soft);font-size:14px}
   .works-note{color:var(--soft);font-size:14px;margin-top:14px}
   .works-more{display:flex;justify-content:center;margin-top:26px}
+  /* carta che si gira */
+  .work.card{overflow:visible;cursor:default;perspective:1200px;border-radius:0}
+  .card-in{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,.7,.2,1);transform-style:preserve-3d}
+  .card.flipped .card-in{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:140px 140px 22px 22px;overflow:hidden}
+  .face.front{border:0;padding:0;margin:0;background:none;cursor:pointer;font:inherit;color:inherit;text-align:left;display:block;width:100%}
+  .face.front .turn{position:absolute;top:auto;right:12px;bottom:12px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.88);color:var(--plum);display:grid;place-items:center;font-size:15px;z-index:1}
+  .face.front figcaption{padding-right:50px}
+  .face.back{transform:rotateY(180deg);background:var(--paper);border:1.5px solid var(--lilac);display:flex;flex-direction:column;justify-content:center;gap:10px;padding:34% 20px 20px;cursor:pointer}
+  .face.back h4{font-family:"Bricolage Grotesque",sans-serif;font-size:19px;line-height:1.15;color:var(--plum);margin:0}
+  .face.back p{margin:0;color:var(--soft);font-size:14px;line-height:1.45}
+  .face.back .w-price{font-weight:700;color:var(--lacquer);font-size:20px}
+  .face.back .w-price.tbd{font-size:14px;font-weight:600}
+  .face.back .w-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .face.back .btn{text-align:center;padding:10px 14px;font-size:14px}
+  .face.back .w-zoom{border:0;background:none;color:var(--lacquer);font:inherit;font-size:13px;font-weight:600;text-decoration:underline;cursor:pointer;padding:2px}
+  @media (prefers-reduced-motion:reduce){.card-in{transition:none}}
+  .lightbox .lb-desc{font-weight:400;opacity:.9;max-width:520px;margin:6px auto 0}
   @media (max-width:760px){.works{grid-template-columns:repeat(2,1fr);gap:10px}.work{border-radius:110px 110px 18px 18px}
     .works.preview{grid-template-columns:repeat(3,1fr);gap:8px}.works.preview .work{border-radius:80px 80px 14px 14px}
     .works.preview .work.ph small{font-size:11px}.works.preview .work.ph .tip{width:30px;height:42px}.works.preview .work.ph .tip::after{width:6px;height:14px;margin:6px 0 0 7px}
-    .works.preview .work figcaption{display:none}}
+    .works.preview .work figcaption{display:none}
+    .face{border-radius:110px 110px 18px 18px}.works.preview .face{border-radius:80px 80px 14px 14px}
+    .works.preview .face.front .turn{display:none}
+    #works-all .work.card{aspect-ratio:3/4}
+    .face.back{border-radius:70px 70px 18px 18px;padding:12px;gap:6px;justify-content:flex-end}.face.back h4{font-size:15px}.face.back p{font-size:12px;line-height:1.35}
+    .face.back .w-actions{gap:4px}
+    .face.back .w-price{font-size:16px}.face.back .w-price.tbd{font-size:12px}.face.back .btn{padding:8px 10px;font-size:12.5px}.face.back .w-zoom{font-size:12px}}
   /* pagina galleria */
   #galleria{display:none;min-height:100vh;padding-top:34px}
   body.g-open #galleria{display:block}
@@ -96,10 +120,21 @@
   .g-cta{text-align:center;margin-top:40px}
   .g-cta p{color:var(--soft);margin-bottom:14px}
   .lightbox{border:0;padding:0;background:transparent;max-width:min(92vw,720px)}
-  .lightbox::backdrop{background:rgba(42,24,33,.82)}
+  .lightbox::backdrop{background:rgba(42,24,33,.92)}
   .lightbox img{max-width:100%;max-height:82vh;border-radius:22px;display:block}
   .lightbox p{color:#fff;text-align:center;margin:10px 0 0;font-weight:500}
-  .lightbox button{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:var(--plum);font-size:20px;cursor:pointer}
+  .lightbox #lb-close{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:var(--plum);font-size:20px;cursor:pointer}
+  .lb-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 16px;margin-top:12px}
+  .lightbox .lb-price{color:#fff;font-weight:700;font-size:18px;margin:0}
+  .lb-book{background:#fff!important;color:var(--plum)!important}
+  .lb-book:hover{background:var(--blush)!important}
+  .work .pz{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.92);color:var(--plum);font-weight:700;font-size:13px;border-radius:999px;padding:4px 10px}
+  .chosen{display:flex;align-items:center;gap:14px;background:var(--paper);border:1.5px solid var(--lilac);border-radius:18px;padding:10px 14px 10px 10px;margin:0 0 18px}
+  .chosen img{width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none}
+  .chosen div{flex:1;min-width:0}
+  .chosen b{display:block;color:var(--plum)}
+  .chosen small{color:var(--soft)}
+  .chosen button{border:0;background:none;color:var(--lacquer);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline}
 
   .lead{color:var(--soft);font-size:18px;max-width:52ch;margin-top:14px}
 
@@ -321,13 +356,13 @@
 <section id="lavori">
   <div class="wrap">
     <h2>I miei lavori</h2>
-    <p class="lead">Qualche esempio di quello che faccio. Tocca una foto per vederla più grande.</p>
+    <p class="lead">Qualche esempio di quello che faccio. Tocca una foto per scoprire descrizione e prezzo e prenotare proprio quel lavoro.</p>
     <div class="works preview" id="works"></div>
     <p class="works-note" id="works-note"></p>
     <div class="works-more"><a class="btn" href="#galleria">Vedi tutti i lavori →</a></div>
   </div>
 </section>
-<dialog class="lightbox" id="lightbox" aria-label="Foto del lavoro"><button type="button" id="lb-close" aria-label="Chiudi">×</button><img id="lb-img" alt=""><p id="lb-cap"></p></dialog>
+<dialog class="lightbox" id="lightbox" aria-label="Foto del lavoro"><button type="button" id="lb-close" aria-label="Chiudi">×</button><img id="lb-img" alt=""><p id="lb-cap"></p><p class="lb-desc" id="lb-desc"></p><div class="lb-foot"><p class="lb-price" id="lb-price" hidden></p><button type="button" class="btn lb-book" id="lb-book">Prenota questo lavoro</button></div></dialog>
 
 <section>
   <div class="wrap">
@@ -382,6 +417,7 @@
   <div class="wrap">
     <h2>Quando sono libera</h2>
     <p class="lead">Sfoglia il calendario: i giorni colorati hanno orari liberi. Scegli il tuo e completi la richiesta in chat in un minuto.</p>
+    <div class="chosen" id="chosen" hidden></div>
     <div class="avail" id="avail"><div class="avail-empty">Sto caricando gli orari…</div></div>
 
     <div class="manage" id="manage" hidden>
@@ -447,7 +483,7 @@
   <div class="wrap">
     <div class="g-top"><a class="g-back" href="#lavori">← Torna al sito</a><a class="btn" href="#prenota">Prenota</a></div>
     <h2>Tutti i lavori</h2>
-    <p class="lead">Una raccolta delle unghie che ho fatto. Tocca una foto per vederla più grande.</p>
+    <p class="lead">Una raccolta delle unghie che ho fatto. Tocca una foto per girarla: dietro trovi descrizione e prezzo, e puoi prenotare proprio quel lavoro.</p>
     <div class="works" id="works-all"></div>
     <p class="works-note" id="works-all-note"></p>
     <div class="g-cta"><p>Ti piace qualcosa? Prenota e lo rifacciamo insieme, su misura per te.</p><a class="btn" href="#prenota">Prenota un appuntamento</a></div>
@@ -495,11 +531,22 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwnx8sfU9yRNtMk_PfV5cj6
 const PRICES = {};
 
 // Foto dei lavori: si aggiungono nella cartella "lavori" del sito, es. {src:"lavori/french-rosa.jpg", titolo:"French rosa"}
+// descrizione: due righe sul lavoro (si legge girando la carta)
+// prezzo: scrivilo tra le virgolette quando Laura lo decide, es. prezzo:"45 €" oppure prezzo:"da 40 €" (vuoto = non si mostra)
 const PORTFOLIO = [
   // le prime 3 vanno anche in homepage
-  {src:"lavori/french-arancio.jpg", titolo:"French arancio e glitter"},
-  {src:"lavori/french-lilla-fiori.jpg", titolo:"French viola con fiori"},
-  {src:"lavori/lilla-animalier.jpg", titolo:"Lilla e animalier"},
+  {src:"lavori/french-arancio.jpg",        titolo:"French arancio e glitter",     prezzo:"", descrizione:"French arancio fluo con un'unghia cromata e glitter olografici."},
+  {src:"lavori/french-lilla-fiori.jpg",    titolo:"French viola con fiori",       prezzo:"", descrizione:"French viola e bianco, fiorellini dipinti a mano e strass."},
+  {src:"lavori/lilla-animalier.jpg",       titolo:"Lilla e animalier",            prezzo:"", descrizione:"Lilla pieno con due unghie animalier dipinte a mano."},
+  {src:"lavori/nude-rosa-strass.jpg",      titolo:"Nude rosa e strass",           prezzo:"", descrizione:"Nude rosa lucido, forma squadrata, con un piccolo strass."},
+  {src:"lavori/pastello-fiori.jpg",        titolo:"Sfumature pastello e fiori",   prezzo:"", descrizione:"Sfumature pastello opache e fiorellini dipinti a mano."},
+  {src:"lavori/smile-pois-rosa.jpg",       titolo:"Smile, stelline e pois",       prezzo:"", descrizione:"Nail art allegra: smile, stelline, pois e onde rosa e giallo."},
+  {src:"lavori/blu-notte-oro.jpg",         titolo:"Blu notte e oro",              prezzo:"", descrizione:"Blu notte con pennellate e glitter oro su base nude."},
+  {src:"lavori/babyboomer-glitter.jpg",    titolo:"Babyboomer e glitter",         prezzo:"", descrizione:"Sfumatura babyboomer rosa e bianco con glitter argento."},
+  {src:"lavori/menta-pois-arcobaleno.jpg", titolo:"Menta e pois arcobaleno",      prezzo:"", descrizione:"Verde menta e pois arcobaleno su base nude."},
+  {src:"lavori/fucsia-oro.jpg",            titolo:"Fucsia e foglia oro",          prezzo:"", descrizione:"Fucsia lucido, glitter oro e foglia oro."},
+  {src:"lavori/nude-polvere-colorata.jpg", titolo:"Nude con polvere colorata",    prezzo:"", descrizione:"Base nude con effetto polvere colorata su ogni unghia."},
+  {src:"lavori/pastello-onde.jpg",         titolo:"Pastello e onde arcobaleno",   prezzo:"", descrizione:"Lilla e azzurro pastello con onde arcobaleno e glitter."},
 ];
 
 // ---------- render content ----------
@@ -510,7 +557,16 @@ $("chart").innerHTML = BIZ.groups.map(g => `<div class="group"><h3>${g.title}</h
 $("rules").innerHTML = BIZ.rules.map(r => `<li>${r}</li>`).join("");
 const TONES = ["var(--lacquer)","#e6aebb","var(--plum)","#f2d5dc","#c99aa8","var(--nude)"];
 function workTiles(list, n){
-  if (list.length) return list.map((w, i) => `<button type="button" class="work" data-i="${i}" aria-label="Apri la foto: ${esc(w.titolo || "lavoro")}"><img src="${esc(w.src)}" alt="${esc(w.titolo || "Lavoro di Laura")}" loading="lazy">${w.titolo ? `<figcaption>${esc(w.titolo)}</figcaption>` : ""}</button>`).join("");
+  if (list.length) return list.map((w, i) => `<div class="work card" data-i="${i}">
+    <div class="card-in">
+      <button type="button" class="face front" aria-label="Gira la carta: ${esc(w.titolo || "lavoro")}"><img src="${esc(w.src)}" alt="${esc(w.titolo || "Lavoro di Laura")}" loading="lazy">${w.titolo ? `<figcaption>${esc(w.titolo)}</figcaption>` : ""}<span class="turn" aria-hidden="true">↻</span></button>
+      <div class="face back" aria-hidden="true">
+        <h4>${esc(w.titolo || "Lavoro di Laura")}</h4>
+        ${w.descrizione ? `<p>${esc(w.descrizione)}</p>` : ""}
+        ${w.prezzo ? `<span class="w-price">${esc(w.prezzo)}</span>` : `<span class="w-price tbd">Prezzo in arrivo</span>`}
+        <div class="w-actions"><button type="button" class="btn w-book" tabindex="-1">Prenota questo</button><button type="button" class="w-zoom" tabindex="-1">Foto grande</button></div>
+      </div>
+    </div></div>`).join("");
   return Array.from({length:n}, (_, i) => `<div class="work ph" aria-hidden="true"><span class="tip" style="--c:${TONES[i % TONES.length]}"></span><small>Foto in arrivo</small></div>`).join("");
 }
 function renderWorks(){
@@ -521,14 +577,36 @@ function renderWorks(){
   $("works-note").textContent = none; $("works-all-note").textContent = none;
 }
 renderWorks();
-function openWork(e){
-  const b = e.target.closest("button.work"); if (!b) return;
-  const w = PORTFOLIO[+b.dataset.i]; if (!w) return;
+function showPhoto(i){
+  const w = PORTFOLIO[i]; if (!w) return;
   $("lb-img").src = w.src; $("lb-img").alt = w.titolo || "Lavoro di Laura"; $("lb-cap").textContent = w.titolo || "";
+  $("lb-desc").textContent = w.descrizione || "";
+  $("lb-price").textContent = w.prezzo || ""; $("lb-price").hidden = !w.prezzo;
+  $("lightbox").dataset.i = i;
   if (typeof $("lightbox").showModal === "function") $("lightbox").showModal();
 }
-$("works").addEventListener("click", openWork);
-$("works-all").addEventListener("click", openWork);
+function flip(card, on){
+  card.classList.toggle("flipped", on);
+  card.querySelector(".face.front").setAttribute("aria-hidden", on ? "true" : "false");
+  card.querySelector(".face.front").tabIndex = on ? -1 : 0;
+  card.querySelector(".face.back").setAttribute("aria-hidden", on ? "false" : "true");
+  card.querySelectorAll(".face.back button").forEach(b => b.tabIndex = on ? 0 : -1);
+  if (on) card.querySelector(".w-book").focus({preventScroll:true});
+}
+function onWorks(e){
+  const card = e.target.closest(".card"); if (!card) return;
+  const i = +card.dataset.i;
+  if (e.target.closest(".w-book")){ bookWork(PORTFOLIO[i]); return; }
+  if (e.target.closest(".w-zoom")){ showPhoto(i); return; }
+  // anteprime piccole (telefono, homepage): la carta è troppo stretta, apro la foto con descrizione e prezzo
+  if (!card.classList.contains("flipped") && card.offsetWidth < 150){ showPhoto(i); return; }
+  const on = !card.classList.contains("flipped");
+  // una carta girata alla volta
+  card.parentElement.querySelectorAll(".card.flipped").forEach(c => { if (c !== card) flip(c, false); });
+  flip(card, on);
+}
+$("works").addEventListener("click", onWorks);
+$("works-all").addEventListener("click", onWorks);
 // pagina dedicata ai lavori: si apre con l'indirizzo .../#galleria
 function route(){
   const open = location.hash === "#galleria";
@@ -543,6 +621,32 @@ function route(){
 const DOC_TITLE = document.title;
 window.addEventListener("hashchange", route);
 route();
+// "Prenota questo lavoro": il lavoro scelto diventa il servizio della prenotazione
+let chosenWork = null;
+function workLabel(w){ return `Look «${w.titolo}»` + (w.prezzo ? ` (${w.prezzo})` : ""); }
+function chooseWork(w){
+  chosenWork = w;
+  fb.servizio = workLabel(w);
+  $("chosen").innerHTML = `<img src="${esc(w.src)}" alt=""><div><b>Hai scelto: ${esc(w.titolo)}${w.prezzo ? ` · ${esc(w.prezzo)}` : ""}</b><small>Ora scegli giorno e orario qui sotto.</small></div><button type="button" id="chosen-x">Cambia</button>`;
+  $("chosen").hidden = false;
+  if (!pickedSlot) setChips([], "");
+  const msg = `Hai scelto il look «${w.titolo}»${w.prezzo ? `, prezzo ${w.prezzo}` : ""} 💅 Scegli giorno e orario nel calendario e poi ti chiedo i tuoi dati.`;
+  addMsg(msg, "bot"); history.push({role:"assistant", content:msg});
+}
+function clearWork(){
+  if (chosenWork && fb.servizio === workLabel(chosenWork)) fb.servizio = "";
+  chosenWork = null; $("chosen").hidden = true; $("chosen").innerHTML = "";
+}
+function bookWork(w){
+  if (!w) return;
+  if ($("lightbox").open) $("lightbox").close();
+  document.querySelectorAll(".card.flipped").forEach(c => flip(c, false));
+  chooseWork(w);
+  if (location.hash === "#disponibilita") $("disponibilita").scrollIntoView();
+  else location.hash = "#disponibilita";
+}
+$("lb-book").addEventListener("click", () => bookWork(PORTFOLIO[+$("lightbox").dataset.i]));
+$("chosen").addEventListener("click", e => { if (e.target.id === "chosen-x"){ clearWork(); location.hash = "#galleria"; } });
 $("lb-close").addEventListener("click", () => $("lightbox").close());
 $("lightbox").addEventListener("click", e => { if (e.target === $("lightbox")) $("lightbox").close(); });
 
@@ -841,7 +945,7 @@ async function pickSlot(sl){
     return;
   }
   const reply = fb.servizio
-    ? `Perfetto, ${slotLabel(sl)} 🗓️ Per ${fb.servizio.toLowerCase()} scrivimi nome, numero di telefono ed email, anche tutto in un messaggio.`
+    ? `Perfetto, ${slotLabel(sl)} 🗓️ Per ${fb.servizio.startsWith("Look") ? "il look «" + fb.servizio.split("«")[1].split("»")[0] + "»" : fb.servizio.toLowerCase()} scrivimi nome, numero di telefono ed email, anche tutto in un messaggio.`
     : `Perfetto, ${slotLabel(sl)} 🗓️ Quale servizio desideri? Toccalo qui sotto.`;
   addMsg(reply, "bot"); history.push({role:"assistant", content:reply});
   if (!fb.servizio) serviceChips();
@@ -925,6 +1029,7 @@ function fbNext(){
   if (!miss.length){
     const booking = {nome:fb.nome, servizio:fb.servizio, quando:fb.quando, telefono:fb.telefono, email:fb.email, slotId:fb.slotId || null};
     Object.assign(fb, {active:false, servizio:"", quando:"", nome:"", telefono:"", email:"", slotId:null});
+    if (typeof chosenWork !== "undefined" && chosenWork){ chosenWork = null; $("chosen").hidden = true; }
     return {reply:`Perfetto ${booking.nome}! Ho preso nota: ${booking.servizio}, ${booking.quando}. ${booking.slotId ? `Laura ti conferma l'appuntamento a breve al ${booking.telefono}` : `Laura verifica la disponibilità e ti propone l'orario al ${booking.telefono}`}, e il riepilogo arriva a ${booking.email} ✨`, booking};
   }
   const contatti = ["il tuo nome","un numero di telefono","un'email per mandarti il riepilogo"];
