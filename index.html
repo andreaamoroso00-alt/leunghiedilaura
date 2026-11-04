@@ -518,7 +518,7 @@ const BIZ = {
   rules: [
     "Disdette gratuite fino a 24 ore prima.",
     "Oltre 15 minuti di ritardo il servizio potrebbe essere accorciato.",
-    "Pagamenti in contanti o con carta.",
+    "Puoi pagare in contanti, con PayPal o con Satispay.",
     "Hai allergie o unghie molto fragili? Dimmelo prima dell'appuntamento."
   ]
 };
@@ -1061,7 +1061,7 @@ function fallbackAnswer(text){
   if (has(["nail art","decoraz","french","disegn"])) return {reply:"Sì, Laura fa nail art: decorazioni, french ed effetti. Per un disegno particolare mandale una foto di riferimento!"};
   const s = findService(t);
   if (s) return {reply:`Sì, Laura fa ${s.name.toLowerCase()} 💅 Vuoi prenotare?`};
-  if (has(["pagare","pagamento","carta","contanti"])) return {reply:"Puoi pagare in contanti o con carta."};
+  if (has(["pagare","pagamento","pagamenti","paga","contanti","paypal","satispay","bancomat","con carta","carta di credito"])) return {reply:"Puoi pagare in contanti, con PayPal o con Satispay 😊"};
   if (has(["disdir","annull","spostare"])) return {reply:"Puoi disdire gratis fino a 24 ore prima. Scrivimi nome e appuntamento e avviso Laura."};
   return {reply:"Non ne sono sicura e non voglio risponderti a caso: giro la domanda a Laura, che ti risponde presto.", handoff:"Domanda da gestire: " + text};
 }
