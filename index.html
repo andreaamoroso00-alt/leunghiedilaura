@@ -130,6 +130,7 @@
   .lb-book:hover{background:var(--blush)!important}
   .work .pz{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.92);color:var(--plum);font-weight:700;font-size:13px;border-radius:999px;padding:4px 10px}
   .chosen{display:flex;align-items:center;gap:14px;background:var(--paper);border:1.5px solid var(--lilac);border-radius:18px;padding:10px 14px 10px 10px;margin:0 0 18px}
+  .chosen[hidden]{display:none}
   .chosen img{width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none}
   .chosen div{flex:1;min-width:0}
   .chosen b{display:block;color:var(--plum)}
@@ -144,7 +145,9 @@
   .group:last-child{border-bottom:0}
   .group h3{font-size:22px;font-weight:600;margin:6px 0 8px}
   .row{display:grid;grid-template-columns:20px 1fr auto;gap:14px;align-items:center;padding:10px 0}
-  .pricenote{color:var(--soft);font-size:15px;padding:16px 0 10px;margin:0}
+  .pricenote{color:var(--plum);font-size:17px;font-weight:500;line-height:1.5;padding:16px 0 10px;margin:0}
+  .pricenote span{display:block}
+  .pricenote span + span{margin-top:8px}
   .pricenote:empty{display:none}
   .sw{width:18px;height:18px;border-radius:50% 50% 45% 45%;background:var(--c,var(--lacquer))}
   .row .name{font-weight:500}
@@ -544,6 +547,7 @@ const PRICES = {
   "Smalto semipermanente piedi":"20 €",
   "Nail art":"da 5 €"
 };
+const FIRST_VISIT = "Al primo trattamento può essere previsto un supplemento di 5 €, per correggere eventuali imperfezioni e preparare al meglio le unghie.";
 const priceHTML = p => !p ? "" : p.startsWith("da ") ? `<small>da</small>${p.slice(3)}` : p;
 
 // Foto dei lavori: si aggiungono nella cartella "lavori" del sito, es. {src:"lavori/french-rosa.jpg", titolo:"French rosa"}
@@ -569,7 +573,7 @@ const PORTFOLIO = [
 const $ = id => document.getElementById(id);
 $("chart").innerHTML = BIZ.groups.map(g => `<div class="group"><h3>${g.title}</h3>${g.items.map(i =>
   `<div class="row"><span class="sw" style="--c:${g.c}"></span><span class="name">${i[0]}${i[1] ? `<small>${i[1]}</small>` : ""}</span><span class="price">${priceHTML(PRICES[i[0]])}</span></div>`).join("")}</div>`).join("")
-  + `<p class="pricenote">${Object.keys(PRICES).length ? "I prezzi con «da» sono di partenza: quello finale lo valutiamo insieme in base al lavoro." : "Il listino prezzi è in arrivo: per ora chiedi pure all'assistente qui sotto e ti risponde Laura."}</p>`;
+  + `<p class="pricenote">${Object.keys(PRICES).length ? "<span>I prezzi con «da» sono di partenza: quello finale lo valutiamo insieme in base al lavoro.</span><span>" + FIRST_VISIT + "</span>" : "Il listino prezzi è in arrivo: per ora chiedi pure all'assistente qui sotto e ti risponde Laura."}</p>`;
 $("rules").innerHTML = BIZ.rules.map(r => `<li>${r}</li>`).join("");
 const TONES = ["var(--lacquer)","#e6aebb","var(--plum)","#f2d5dc","#c99aa8","var(--nude)"];
 function workTiles(list, n){
@@ -701,7 +705,7 @@ REGOLE FERREE:
 
 ORARI LIBERI: ${freeSlotsText() || "nessuno pubblicato al momento"}
 SERVIZI: ${SERVICES.map(s => s.name + (s.price ? `: ${s.price}` : "")).join("; ")}
-REGOLE: ${BIZ.rules.join(" ")}
+REGOLE: ${BIZ.rules.join(" ")} ${FIRST_VISIT}
 
 FORMATO: rispondi SOLO con un oggetto JSON valido, senza altro testo:
 {"reply": "testo per la cliente",
@@ -1076,7 +1080,7 @@ function fallbackAnswer(text){
     if (!(isQ && before === JSON.stringify(fb))) return fbNext();
   }
   if (has(["dove","indirizzo","zona"])) return {reply:"Laura lavora a Foglizzo (TO): l'indirizzo preciso ti arriva insieme alla conferma dell'appuntamento."};
-  if (has(["prezz","costa","listino","quanto viene","quanto si paga","tariff"])) { const s0 = findService(t); if (s0 && s0.price) return {reply:`${s0.name}: ${s0.price}${s0.price.startsWith("da") ? " (il prezzo finale dipende dal lavoro, lo valuta Laura con te)" : ""} 💅 Vuoi prenotare?`}; return {reply:"Ecco il listino: " + SERVICES.filter(x => x.price).map(x => `${x.name} ${x.price}`).join(" · ") + ". I prezzi con «da» dipendono dal lavoro."}; }
+  if (has(["prezz","costa","listino","quanto viene","quanto si paga","tariff"])) { const s0 = findService(t); if (s0 && s0.price) return {reply:`${s0.name}: ${s0.price}${s0.price.startsWith("da") ? " (il prezzo finale dipende dal lavoro, lo valuta Laura con te)" : ""} 💅 Vuoi prenotare?`}; return {reply:"Ecco il listino: " + SERVICES.filter(x => x.price).map(x => `${x.name} ${x.price}`).join(" · ") + ". I prezzi con «da» dipendono dal lavoro. " + FIRST_VISIT}; }
   if (has(["pedicure","piedi","piede"])) return {reply:"Sì, per i piedi Laura fa lo smalto semipermanente 💅 Se vuoi prenotarlo scegli un orario dal calendario."};
   if (has(["nail art","decoraz","french","disegn"])) return {reply:"Sì, Laura fa nail art: decorazioni, french ed effetti. Per un disegno particolare mandale una foto di riferimento!"};
   const s = findService(t);
