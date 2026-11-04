@@ -269,6 +269,7 @@
   .mstatus.err{color:var(--lacquer)}
 
   /* Laura's panel (preview) */
+  .owner[hidden]{display:none}
   .owner{margin-top:26px;background:var(--paper);border-radius:24px;padding:22px 24px}
   .owner summary{cursor:pointer;font-weight:600}
   .owner .hint{color:var(--soft);font-size:14px;margin:8px 0 14px}
@@ -462,7 +463,8 @@
       </div>
     </div>
 
-    <details class="owner">
+    <!-- pannello di prova: nascosto (le richieste vere arrivano nel foglio Google e per email) -->
+    <details class="owner" hidden>
       <summary>Anteprima: cosa riceve Laura</summary>
       <p class="hint">Qui arrivano le richieste complete. Da questo pannello parte l'email di riepilogo dal Gmail di chi sta guardando la pagina (in questa prova, il tuo).</p>
       <div id="requests"><div class="empty">Ancora nessuna richiesta. Prova a prenotare dalla chat qui sopra.</div></div>
