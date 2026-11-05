@@ -556,7 +556,7 @@
       <h3>Dove</h3>
       <p>A Foglizzo, in provincia di Torino. L'indirizzo preciso ti arriva con la conferma dell'appuntamento.</p>
       <h3 style="margin-top:26px">Scrivimi e seguimi</h3>
-      <div class="social"><span class="wa"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4 5.1 5.1 0 003.2.7 2.7 2.7 0 001.8-1.3 2.2 2.2 0 00.2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg> WhatsApp</span><a class="ig" href="https://www.instagram.com/_leunghiedilaura_/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Instagram</a></div>
+      <div class="social"><a class="wa" href="https://wa.me/393475090310" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4 5.1 5.1 0 003.2.7 2.7 2.7 0 001.8-1.3 2.2 2.2 0 00.2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg> WhatsApp</a><a class="ig" href="https://www.instagram.com/_leunghiedilaura_/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Instagram</a></div>
     </div>
     <div>
       <h3>Da sapere</h3>
@@ -653,11 +653,8 @@ const PORTFOLIO = [
 
 // PROVA: foto di esempio accanto ad alcune voci del listino
 const SERVICE_PHOTOS = {
-  "Smalto semipermanente":"lavori/lilla-animalier.jpg",
-  "Copertura in gel":"lavori/babyboomer-glitter.jpg",
-  "Ricostruzione in gel":"lavori/nude-rosa-strass.jpg",
-  "Muretti / Extreme":"lavori/french-arancio.jpg",
-  "Nail art":"lavori/smile-pois-rosa.jpg"
+  // vuoto: le foto nel listino si rimettono quando ci sono quelle di ogni trattamento
+  // es. "Ricostruzione in gel":"lavori/nome-foto.jpg",
 };
 // ---------- render content ----------
 const $ = id => document.getElementById(id);
