@@ -525,7 +525,7 @@
         <ul>
           <li>Scegli tu l'orario libero dal calendario</li>
           <li>Ricevi il riepilogo via email</li>
-          <li>Per allergie o richieste particolari ti ricontatto io</li>
+          <li>Per allergie o richieste particolari scrivimi su WhatsApp</li>
         </ul>
       </div>
       <div class="chat" aria-label="Chat di prenotazione">
@@ -783,7 +783,7 @@ REGOLE FERREE:
 - Prezzi: sul sito non sono pubblicati. Non dare MAI cifre, nemmeno indicative: spiega che i prezzi li comunica Laura in base al lavoro e invita a scriverle su WhatsApp al 347 509 0310, oppure a prenotare e parlarne alla conferma.
 - Non indicare durate dei servizi: dipendono dalle condizioni delle unghie e le valuta Laura.
 - Durante l'appuntamento le clienti trovano TV, caffè, acqua e chiacchiere: puoi dirlo se chiedono com'è l'esperienza.
-- Passa a Laura (handoff) per: allergie, unghie danneggiate o problemi di salute, richieste di nail art complesse da preventivare, reclami, o qualsiasi cosa che non sai con certezza.
+- Per allergie, unghie danneggiate o problemi di salute, richieste di nail art complesse da preventivare, reclami, disdette o qualsiasi cosa che non sai con certezza: invita la cliente a scrivere direttamente a Laura su WhatsApp al 347 509 0310. Non dire MAI che hai avvisato Laura o che Laura la ricontatterà: dalla chat Laura non riceve questi messaggi. Segnala comunque un handoff.
 
 ORARI LIBERI: ${freeSlotsText() || "nessuno pubblicato al momento"}
 SERVIZI: ${SERVICES.map(s => s.name + (s.price ? `: ${s.price}` : "")).join("; ")}
@@ -1153,9 +1153,9 @@ function fallbackAnswer(text){
   const t = text.toLowerCase();
   const has = w => w.some(x => t.includes(x));
   if (has(["allerg","fragil","rovinat","infiamm","fungh","micosi","gravidanz"]))
-    return {reply:"Grazie di avermelo detto! In questi casi preferisco parlarne prima: ho avvisato Laura, che ti scrive per capire insieme il trattamento più adatto 💛", handoff:"Cliente con unghie fragili/allergia o dubbio di salute: ricontattare prima di prenotare"};
+    return {reply:"Grazie di avermelo detto! In questi casi preferisco parlarne prima: scrivi a Laura su WhatsApp al 347 509 0310, così valutate insieme il trattamento più adatto 💛", handoff:"Cliente con unghie fragili/allergia o dubbio di salute: ricontattare prima di prenotare"};
   if (has(["reclamo","rovinat","staccat","insoddisf"]))
-    return {reply:"Mi dispiace! Passo subito il tuo messaggio a Laura, che ti ricontatta di persona.", handoff:"Cliente insoddisfatta: ricontattare"};
+    return {reply:"Mi dispiace! Scrivi pure a Laura su WhatsApp al 347 509 0310: ti risponde lei di persona.", handoff:"Cliente insoddisfatta: ricontattare"};
   if (has(["orari","aperta","quando lavori","che giorni","domenica"])) return {reply:"Laura lavora su appuntamento: dimmi che giorno e fascia oraria preferisci e ti propone lei l'orario libero più vicino."};
   if (has(["coccol","caffè","caffe","tv","durante","esperienza","come si sta","com'è un appuntamento","com'e un appuntamento"])) return {reply:"Ti metti comoda: c'è la TV, un caffè, acqua a volontà e due chiacchiere ☕ Le coccole sono incluse!"};
   if (has(["quanto dura","durata","quanto tempo","ci vuole"])) return {reply:"Dipende da come arrivano le tue unghie: Laura lo valuta con te, così non ti do un tempo a caso."};
@@ -1171,8 +1171,8 @@ function fallbackAnswer(text){
   const s = findService(t);
   if (s) return {reply:`Sì, Laura fa ${s.name.toLowerCase()}${s.price ? ` (${s.price})` : ""} 💅 Vuoi prenotare?`};
   if (has(["pagare","pagamento","pagamenti","paga","contanti","paypal","satispay","bancomat","con carta","carta di credito"])) return {reply:"Puoi pagare in contanti, con PayPal o con Satispay 😊"};
-  if (has(["disdir","annull","spostare"])) return {reply:"Puoi disdire gratis fino a 24 ore prima. Scrivimi nome e appuntamento e avviso Laura."};
-  return {reply:"Non ne sono sicura e non voglio risponderti a caso: giro la domanda a Laura, che ti risponde presto.", handoff:"Domanda da gestire: " + text};
+  if (has(["disdir","annull","spostare"])) return {reply:"Puoi disdire gratis fino a 24 ore prima: scrivi a Laura su WhatsApp al 347 509 0310 con il tuo nome e il giorno dell'appuntamento."};
+  return {reply:"Non ne sono sicura e non voglio risponderti a caso: chiedilo direttamente a Laura su WhatsApp al 347 509 0310, ti risponde lei.", handoff:"Domanda da gestire: " + text};
 }
 
 // ---------- AI mode ----------
