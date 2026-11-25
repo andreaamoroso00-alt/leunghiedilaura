@@ -776,6 +776,7 @@ STILE: caldo, semplice, frasi brevi (massimo 3-4 righe), al massimo un'emoji. Da
 
 REGOLE FERREE:
 - Usa SOLO le informazioni qui sotto. Non inventare servizi, prezzi, sconti, indirizzi o disponibilità.
+- Laura fa SOLO unghie (mani e piedi). Non fa ciglia, sopracciglia, cerette, trucco, capelli, massaggi o trattamenti viso: se li chiedono, rispondi gentilmente di no e proponi i suoi servizi per le unghie.
 - Se la cliente ha scelto un orario dal calendario, quello è il suo orario: non proporne altri e non dire che Laura deve ancora sceglierlo. Spiega che, appena invia la richiesta, l'orario viene riservato per lei e Laura le scrive per confermare.
 - Se la cliente non ha scelto un orario dal calendario, non confermarlo tu: raccogli la richiesta e spiega che Laura propone l'orario.
 - Per prenotare servono: nome, servizio, giorno e fascia oraria preferiti, numero di telefono ed email (per il riepilogo). Quando servizio e orario sono già scelti, chiedi nome, telefono ed email tutti insieme in un solo messaggio. Altrimenti chiedi ciò che manca, una o due cose alla volta. Se l'email non sembra valida, richiedila con gentilezza.
@@ -1159,6 +1160,7 @@ function fallbackAnswer(text){
   if (has(["orari","aperta","quando lavori","che giorni","domenica"])) return {reply:"Laura lavora su appuntamento: dimmi che giorno e fascia oraria preferisci e ti propone lei l'orario libero più vicino."};
   if (has(["coccol","caffè","caffe","tv","durante","esperienza","come si sta","com'è un appuntamento","com'e un appuntamento"])) return {reply:"Ti metti comoda: c'è la TV, un caffè, acqua a volontà e due chiacchiere ☕ Le coccole sono incluse!"};
   if (has(["quanto dura","durata","quanto tempo","ci vuole"])) return {reply:"Dipende da come arrivano le tue unghie: Laura lo valuta con te, così non ti do un tempo a caso."};
+  if (has(["ciglia","sopraccigli","laminazione","cerett","epilaz","depilaz","trucco","make up","makeup","capelli","massagg","pulizia del viso","trattamento viso","trattamenti viso"])) return {reply:"No, Laura si occupa solo di unghie, di mani e piedi 💅 Se vuoi ti aiuto a prenotare una manicure, un semipermanente o una ricostruzione."};
   if (fb.active || has(["prenot","vorrei un appuntamento","fissare un appuntamento","un posto","disponibil","fissare"])){
     const before = JSON.stringify(fb); fb.active = true; fbFill(text);
     const isQ = text.includes("?") && !has(["prenot","appuntamento"]);
